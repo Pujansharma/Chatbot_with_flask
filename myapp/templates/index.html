@@ -202,47 +202,41 @@ button, #user-input {
 
     <script>
         function sendMessage() {
-    const userMessage = document.getElementById("user-input").value;
-    const chatHistory = document.getElementById("chat-history");
+            const userMessage = document.getElementById("user-input").value;
+            const chatHistory = document.getElementById("chat-history");
+            chatHistory.innerHTML += `
+                <div class="loading-dots">
+                    <span>.</span>
+                    <span>.</span>
+                    <span>.</span>
+                </div>`;
 
-    // Display the loading animation
-    chatHistory.innerHTML += `
-        <div class="loading-dots">
-            <span>.</span>
-            <span>.</span>
-            <span>.</span>
-        </div>`;
+            // Display the user message in the chat history
+            chatHistory.innerHTML += `<div class="user-message">${userMessage}</div>`;
 
-    // Send the user message to the server for processing
-    fetch("/ask", {
-        method: "POST",
-        body: new URLSearchParams({ user_input: userMessage }),
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+            // Send the user message to the server for processing
+            fetch("/ask", {
+                method: "POST",
+                body: new URLSearchParams({ user_input: userMessage }),
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the chatbot's response in the chat history
+                const loadingDots = document.querySelector(".loading-dots");
+                if (loadingDots) {
+                    loadingDots.remove();
+                }
+
+                // Display the chatbot's response in the chat history
+                chatHistory.innerHTML += `<div class="chatbot-message">${data.chatbot_response}</div>`;
+            });
+
+            // Clear the user input field
+            document.getElementById("user-input").value = "";
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Remove the loading animation
-        const loadingDots = document.querySelector(".loading-dots");
-        if (loadingDots) {
-            loadingDots.remove();
-        }
-
-        // Display the chatbot's response in the chat history
-        chatHistory.innerHTML += `<div class="chatbot-message">${data.chatbot_response}</div>`;
-
-        // Scroll to the bottom of the chat history
-        chatHistory.scrollTop = chatHistory.scrollHeight;
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        // Handle the error here, e.g., display an error message in the chat history.
-    });
-
-    // Clear the user input field
-    document.getElementById("user-input").value = "";
-}
     </script>
 </body>
 </html>

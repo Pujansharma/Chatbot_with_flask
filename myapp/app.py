@@ -1,10 +1,15 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS  # Import CORS
 import openai
 from decouple import config
+
 app = Flask(__name__)
 
 # Configure your OpenAI API key
 openai.api_key = config("OPENAI_API_KEY")
+
+# Apply CORS to your app
+CORS(app, resources={r"/ask": {"origins": "*"}})  # Allow all origins for development
 
 @app.route("/")
 def index():
@@ -13,7 +18,7 @@ def index():
 @app.route("/ask", methods=["POST"])
 def ask():
     user_input = request.form.get("user_input")
-    
+
     # Initialize a conversation with a system message
     conversation = [
         {"role": "system", "content": "You are a helpful assistant."},

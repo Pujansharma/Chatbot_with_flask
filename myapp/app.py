@@ -34,8 +34,8 @@ def ask():
 
     # Extract the chatbot's response
     chatbot_response = response.choices[0].message["content"]
-
     return jsonify({"chatbot_response": chatbot_response})
+    # return jsonify({"chatbot_response": chatbot_response})
 
 if __name__ == "__main__":
     app.run(debug=True)
